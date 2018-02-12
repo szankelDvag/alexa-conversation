@@ -41,6 +41,7 @@ module.exports = function conversation({name, app, appId,
 
   const api = { // public API
     userSays,
+    callFunction,
     thenPlainResponse: null, // placeholder
     thenSsmlResponse: null, // placeholder
     end
@@ -95,6 +96,11 @@ module.exports = function conversation({name, app, appId,
 
     return api;
   }
+
+    function callFunction (f) {
+        f();
+        return api;
+    }
 
   function end() { // runs the tests stored in `dialog` in seq
     describe(`Executing conversation: ${conversationName}`, function() {

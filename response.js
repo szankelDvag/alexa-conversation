@@ -31,7 +31,8 @@ function initResponse(test, conversationApi, fixSpaces, fuzzyDefault, isSsml) {
         shouldApproximate: (expected, reprompt, fuzzyScoreOverride) => shouldApproximate(true, expected, reprompt, fuzzyScoreOverride),
         shouldNotApproximate: (expected, reprompt, fuzzyScoreOverride) => shouldApproximate(false, expected, reprompt, fuzzyScoreOverride),
         shouldMatch: (regex, regexReprompt) => shouldMatch(true, regex, regexReprompt),
-        shouldNotMatch: (regex, regexReprompt) => shouldMatch(false, regex, regexReprompt)
+        shouldNotMatch: (regex, regexReprompt) => shouldMatch(false, regex, regexReprompt),
+        callFunction: (f) => callFunction(f)
     };
 
     function api() {
@@ -112,14 +113,19 @@ function initResponse(test, conversationApi, fixSpaces, fuzzyDefault, isSsml) {
                     let expectedRepromptArray = expectedReprompt();
                     expectedRepromptArray = typeof expectedRepromptArray === 'string' ? [expectedRepromptArray] : expectedRepromptArray;
                     let map = _.without(_.map(expectedRepromptArray, (expectedSpeech) => {
-                        actuals.speech = actuals.speech.replace(/^\s+|\s+$/g,'');
-                        return shouldOrNot ? actuals.speech === expectedSpeech : actuals.speech !== expectedSpeech;
+                        actuals.reprompt = actuals.reprompt.replace(/^\s+|\s+$/g,'');
+                        return shouldOrNot ? actuals.reprompt === expectedSpeech : actuals.reprompt !== expectedSpeech;
                     }), false);
                     assert.equal(map.length, shouldOrNot ? 1 : 0);
                 });
             }
         });
         return api(); // response.shouldEqual(...).shouldContain(...).{something}
+    }
+
+    function callFunction (f) {
+        f();
+        return api();
     }
 
     function shouldContain(shouldOrNot, expected, expectedReprompt) {
